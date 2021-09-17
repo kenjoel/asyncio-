@@ -9,8 +9,12 @@ def print_hi(name):
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
+def hello_world(something: str):
+    print('Hello,' + something)
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    hello_world('World')
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
