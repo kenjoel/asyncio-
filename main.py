@@ -2,10 +2,11 @@ from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
-from app.crud import crud
-from app.database.db import engine, SessionLocal
-from app.models import models
-from app.schema import schema
+
+from backend.app.crud import crud
+from backend.app.database.db import engine, SessionLocal
+from backend.app.models import models
+from backend.app.schema import schema
 
 app = FastAPI()
 
@@ -19,6 +20,16 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.get("/")
+def read():
+    return {"Hello": "World"}
+
+
+@app.get("/hello")
+def hello():
+    return {"I said": "Hello"}
 
 
 @app.post("/users/", response_model=schema.User)

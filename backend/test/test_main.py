@@ -1,7 +1,6 @@
 from starlette.testclient import TestClient
-from fastapi import FastAPI
+from main import app
 
-app = FastAPI()
 client = TestClient(app)
 
 items = {}
@@ -13,17 +12,6 @@ app.dependency_overrides[common_parameters] = override_dependency
 
 This Workflow this is bugging me
 '''
-
-
-@app.get("/")
-def read():
-    return {"Hello": "World"}
-
-
-@app.get("/hello")
-def hello():
-    return {"I said":"Hello"}
-
 
 def test_read():
     response = client.get("/")
