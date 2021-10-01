@@ -39,7 +39,7 @@ jobs:
       uses: mr-smithers-excellent/docker-build-push@v5
       with:
         image: inveigle/fast_api
-        tags: v1, latest
+        tags: v1
         registry: docker.io
         dockerfile: ./DockerFile
         username: ${{ secrets.DOCKER_USERNAME }}
