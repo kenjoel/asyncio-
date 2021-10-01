@@ -41,5 +41,6 @@ jobs:
         image: inveigle/fast_api
         tags: v1, latest
         registry: docker.io
+        dockerfile: ./DockerFile
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
