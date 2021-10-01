@@ -26,6 +26,11 @@ def read():
     return {"Hello": "World"}
 
 
+@app.get("/hello")
+def hello():
+    return {"I said":"Hello"}
+
+
 @app.post("/users/", response_model=schema.User)
 def create_user(user: schema.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)

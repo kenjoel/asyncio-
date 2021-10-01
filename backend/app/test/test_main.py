@@ -16,13 +16,13 @@ This Workflow this is bugging me
 '''
 
 
-@app.get("/")
-async def read():
-    return {"Hello": "World"}
-
-
 def test_read():
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"Hello": "World"}
 
+
+def test_hello():
+    response = client.get("/hello")
+    assert response.status_code == 200
+    assert response.json() == {"I said": "Hello"}
