@@ -1,5 +1,3 @@
-from pydantic import BaseModel
-from pymongo.read_preferences import Primary
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 

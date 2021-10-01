@@ -1,6 +1,4 @@
 from typing import List
-
-import uvicorn
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from fastapi import FastAPI

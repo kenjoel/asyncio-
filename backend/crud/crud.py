@@ -9,8 +9,8 @@ def get_user(db: Session, user_id: int):
 
 
 def get_user_by_email(db: Session, email: str):
-    petesake = db.query(models.User).filter(models.User.email == email).first()
-    return petesake
+    keepsake = db.query(models.User).filter(models.User.email == email).first()
+    return keepsake
 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
