@@ -1,11 +1,30 @@
-from sqlalchemy import create_engine, false
+import sqlalchemy
+import databases
+from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeMeta, sessionmaker
 
-sql_database = "sqlite:///./sql_alchemy.db"
+from backend.app.users.model import UserDB
 
-engine = create_engine(sql_database, connect_args={"check_same_thread": False})
+DATABASE_URL = "sqlite:///./test.db"
+database = databases.Database(DATABASE_URL)
+Base: DeclarativeMeta = declarative_base()
 
-SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
-Base = declarative_base()
+class UserTable(Base, SQLAlchemyBaseUserTable):
+    pass
+
+
+engine = sqlalchemy.create_engine(
+    DATABASE_URL, connect_args={"check_same_thread": False}
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(engine)
+users = UserTable.__table__
+
+
+async def get_user_db():
+    yield SQLAlchemyUserDatabase(UserDB, database, users)
+
