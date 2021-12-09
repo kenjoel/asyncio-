@@ -4,7 +4,7 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserD
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeMeta, sessionmaker
 
-from backend.app.users.model import UserDB
+from backend.app.users.user_models import UserDB
 
 DATABASE_URL = "sqlite:///./test.db"
 database = databases.Database(DATABASE_URL)

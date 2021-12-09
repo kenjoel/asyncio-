@@ -4,9 +4,19 @@ from pydantic import BaseModel
 
 
 class ImageBase(BaseModel):
+    title: str
+    url: str
+    item_id: int
+
+
+class ImageReturn(BaseModel):
     url: str
     title: str
     item_id: int
+    id: int
+
+    class Config:
+        orm_mode = True
 
 
 class ItemBase(BaseModel):
@@ -17,26 +27,24 @@ class ItemBase(BaseModel):
 class ItemCreate(ItemBase):
     quantity: str
     price: int
-    images: list[ImageBase] = []
+    images: List[ImageReturn] = []
     category_id: int
 
     class Config:
         orm_mode = True
-        allow_population_by_field_name = True
-        allow_arbitrary_types = True
 
 
 class Item(ItemBase):
     id: int
     quantity: str
     price: int
-    image: List[ImageBase] = []
+    images: List[ImageReturn] = []
     category_id: int
 
     class Config:
         orm_mode = True
+        arbitrary_types_allowed = True
         allow_population_by_field_name = True
-        allow_arbitrary_types = True
 
 
 class CategoryBase(BaseModel):

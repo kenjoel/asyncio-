@@ -6,7 +6,7 @@ from fastapi_users.authentication import JWTAuthentication
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
 from backend.app.database.db import get_user_db
-from backend.app.users.model import UserCreate, UserDB, User, UserUpdate
+from backend.app.users.user_models import UserCreate, UserDB, User, UserUpdate
 
 SECRET = "SECRET"
 
