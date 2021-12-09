@@ -1,10 +1,13 @@
+import shutil
 from typing import List
+
 from fastapi import Depends, UploadFile, File
 from sqlalchemy.orm import Session
 from fastapi import FastAPI
 
 from backend.app.crud import crud
-from backend.app.database.db import SessionLocal
+from backend.app.database.db import SessionLocal, engine, Base
+from backend.app.models.models import Image
 from backend.app.schema import schema
 from backend.app.users.user_manager import fastapi_users, jwt_authentication
 
@@ -18,6 +21,9 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
@@ -56,16 +62,26 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 @app.post("/new_item", response_model=schema.Item)
-async def create_new_item(item: schema.ItemCreate, files: List[UploadFile] = File(...), db: Session = Depends(get_db)):
-    content = await files[0].filename
+async def create_new_item(item: schema.ItemCreate, db: Session = Depends(get_db)):
+    print(item)
+    obj = crud.create_item(db, item)
+    return {"item": obj}
 
-    if content.filename.endswith(".jpg"):
-        item.image = files
-    else:
-        item.image = None
-    image_obj = await crud.store_images(db, files)
-    obj = await crud.create_item(db, item)
-    return {"item": obj, "image": image_obj}
+
+@app.post("/images_upload", response_model=schema.ImageBase)
+async def upload_image(files: list[UploadFile] = File(...), item_id: int = None, db: Session = Depends(get_db)):
+    images = []
+    try:
+        for f in files:
+            with open("media/" + f.filename, "wb") as image:
+                shutil.copyfileobj(f.file, image)
+                url = str("media/" + f.filename)
+                images.append(Image(url=url, title=f.filename, item_id=item_id))
+    finally:
+        await f.close()
+    db.add_all(images)
+    db.commit()
+    return images
 
 
 @app.post("/category", response_model=schema.FullCategory)

@@ -2,6 +2,8 @@ from typing import List
 
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
+
+from ..models.models import Image
 from ..schema import schema
 from ..models import models
 
@@ -9,11 +11,6 @@ from ..models import models
 def get_user_by_email(db: Session, email: str):
     keepsake = db.query(models.User).filter(models.User.email == email).first()
     return keepsake
-
-
-def store_images(db: Session, file: List[UploadFile]):
-    images = models.Image(**file)
-    return images
 
 
 def get_items(db: Session, skip: int = 0, limit: int = 100):

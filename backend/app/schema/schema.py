@@ -17,18 +17,26 @@ class ItemBase(BaseModel):
 class ItemCreate(ItemBase):
     quantity: str
     price: int
-    image: List[ImageBase] = []
+    images: list[ImageBase] = []
     category_id: int
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        allow_arbitrary_types = True
 
 
 class Item(ItemBase):
     id: int
     quantity: str
     price: int
+    image: List[ImageBase] = []
     category_id: int
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
+        allow_arbitrary_types = True
 
 
 class CategoryBase(BaseModel):

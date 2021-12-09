@@ -13,7 +13,7 @@ class Item(Base):
     price = Column(Integer, index=True)
     images = relationship("Image", back_populates="item", cascade="all, delete-orphan")
     category_id = Column(Integer, ForeignKey("category.id"))
-    category = relationship("Category", back_populates="items", lazy="joined", cascade="all, delete-orphan")
+    category = relationship("Category", back_populates="items", lazy="joined")
 
 
 class Image(Base):
@@ -29,3 +29,5 @@ class Category(Base):
     __tablename__ = "category"
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
+    items = relationship("Item", back_populates="category", cascade="all, delete-orphan")
+
