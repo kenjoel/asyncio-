@@ -19,6 +19,11 @@ def get_items(db: Session, skip: int = 0, limit: int = 100):
     return data
 
 
+def get_items_search(search: str, db: Session, skip: int = 0, limit: int = 100):
+    data = db.query(models.Item).filter(models.Item.title.like(f'%{search}%')).offset(skip).limit(limit).all()
+    return data
+
+
 def store_image(db: Session, image: ImageBase):
     db_image = models.Image(**image.dict())
     db.add(db_image)

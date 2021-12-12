@@ -30,3 +30,4 @@ PyMySQL~=1.0.2
 psycopg2~=2.8.6
 databases~=0.5.3
 passlib~=1.7.4
+python-jose

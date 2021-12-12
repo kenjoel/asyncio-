@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseSettings
 
 from backend.app.database.db import SessionLocal, engine, Base
 from backend.app.routers import images, users, items, category, auth

@@ -4,7 +4,7 @@ from typing import List
 from fastapi import Depends, Form, UploadFile, File, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
-from backend.app.Oauth2 import get_current_user
+from backend.app.oauth2 import get_current_user
 from backend.app.crud import crud
 from backend.app.database.db import get_db
 from backend.app.models.models import Image, Item
@@ -14,7 +14,10 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[schema.Item])
-async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+async def read_items(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
+    if search.isalpha():
+        items = crud.get_items_search(db, skip=skip, limit=limit)
+        return items
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
 
@@ -34,7 +37,7 @@ async def create_new_item(title: str = Form(...), description: str = Form(...), 
     finally:
         await f.close()
     data_stored = Item(title=title, description=description, quantity=quantity, price=price, images=images,
-                       category_id=category_id)
+                       category_id=category_id, created_by=current_user.id)
     db.add(data_stored)
     db.commit()
     return data_stored

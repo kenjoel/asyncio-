@@ -8,27 +8,23 @@ from datetime import datetime, timedelta
 # openssl rand -hex 32 to get the SECRET KEY
 from sqlalchemy.orm import Session
 
+from backend.app.config import settings
 from backend.app.database.db import get_db
 from backend.app.schema import schema
-
-SECRET_KEY = 'c78a58e25d4e8c88e001c1c19130057ba8bf5f410fcb8f84548755fc5dcad863'
-Algorithm = 'HS256'
-Access_token_expiration = 3600
-Refresh_token_expiration = 86400
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-def create_access_token(data: dict, expiration=Access_token_expiration):
+def create_access_token(data: dict, expiration=settings.ACCESS_TOKEN_EXPIRATION_DELTA):
     to_encode = data.copy()
     to_expire = datetime.utcnow() + timedelta(seconds=expiration)
     to_encode.update({'exp': to_expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=Algorithm)
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
 def verify_access_token(token: str):
     try:
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=[Algorithm])
+        decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         users_id = decoded['user_id']
         if users_id is None:
             return "The user_id is missing"
