@@ -10,6 +10,10 @@ def get_user_by_email(db: Session, email: str):
     return keepsake
 
 
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.Users).filter(models.Users.username == username).first()
+
+
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     data = db.query(models.Item).offset(skip).limit(limit).all()
     return data
@@ -70,5 +74,3 @@ def create_user(db: Session, user: schema.UserCreate):
 def get_user(db, user_id):
     user = db.query(models.Users).filter(models.Users.id == user_id).first()
     return user
-
-

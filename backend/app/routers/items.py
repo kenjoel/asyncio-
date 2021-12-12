@@ -4,6 +4,7 @@ from typing import List
 from fastapi import Depends, Form, UploadFile, File, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
+from backend.app.Oauth2 import get_current_user
 from backend.app.crud import crud
 from backend.app.database.db import get_db
 from backend.app.models.models import Image, Item
@@ -21,7 +22,8 @@ async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 @router.post("/new_item", response_model=schema.Item)
 async def create_new_item(title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
                           price: str = Form(...), category_id: int = Form(...), db: Session = Depends(get_db),
-                          file: List[UploadFile] = File(...)):
+                          file: List[UploadFile] = File(...), user_id: int = Depends(get_current_user)):
+    print(user_id)
     try:
         images = []
         for f in file:
@@ -47,14 +49,16 @@ async def get_item(item_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{item_id}/images", response_model=List[schema.ImageBase])
-def get_images(item_id: int, db: Session = Depends(get_db)):
+def get_images(item_id: int, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+    print(user_id)
     item = crud.get_item(db, item_id=item_id)
     return item.images
 
 
 @router.put("/update/{item_id}", response_model=schema.Item)
 async def update_item(item_id: int, title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
-                      price: str = Form(...), file: List[UploadFile] = File(...), db: Session = Depends(get_db)):
+                      price: str = Form(...), file: List[UploadFile] = File(...), db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+    print(user_id)
     try:
         images = []
         for f in file:
@@ -77,7 +81,8 @@ async def update_item(item_id: int, title: str = Form(...), description: str = F
 
 
 @router.delete("/delete/{item_id}", response_model=schema.Item)
-async def delete_item(item_id: int, db: Session = Depends(get_db)):
+async def delete_item(item_id: int, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+    print(user_id)
     item = crud.get_item(db, item_id=item_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Item not found")

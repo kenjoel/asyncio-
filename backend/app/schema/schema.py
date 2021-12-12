@@ -112,3 +112,20 @@ class UserLogin(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+    class Config:
+        orm_mode = True
+
+
+class TokenData(BaseModel):
+    # username: str
+    # is_admin: bool
+    id: Optional[int] = None
+
+    class Config:
+        orm_mode = True
