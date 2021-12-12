@@ -58,3 +58,12 @@ def get_all_images(db: Session, skip: int = 0, limit: int = 100):
 def get_item(db, item_id):
     item = db.query(models.Item).filter(models.Item.id == item_id).first()
     return item
+
+
+def create_user(db: Session, user: schema.UserCreate):
+    db_user = models.User(**user.dict())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+

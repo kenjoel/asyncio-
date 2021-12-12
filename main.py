@@ -28,14 +28,6 @@ def get_db():
 Base.metadata.create_all(bind=engine)
 
 
-async def get_current_user():
-    muser = await current_active_user()
-    if muser:
-        return True
-    else:
-        return False
-
-
 @app.get("/")
 def read():
     return {"Hello": "World"}
@@ -46,30 +38,17 @@ def hello():
     return {"I said": "Hello"}
 
 
-app.include_router(
-    fastapi_users.get_auth_router(jwt_authentication), prefix="/auth/jwt", tags=["auth"]
-)
-app.include_router(
-    fastapi_users.get_register_router(), prefix="/auth", tags=["auth"]
-)
-app.include_router(
-    fastapi_users.get_reset_password_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
-app.include_router(
-    fastapi_users.get_verify_router(),
-    prefix="/auth",
-    tags=["auth"],
-)
-app.include_router(fastapi_users.get_users_router(), prefix="/users", tags=["users"])
+@app.post("/user/signup", response_model=schema.User)
+async def signup(user: schema.UserCreate, db: Session = Depends(get_db)):
+    user_in_db = crud.get_user_by_email(db, email=user.email)
+    if user_in_db:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_user(db=db, user=user)
 
 
 @app.get("/items/", response_model=List[schema.Item])
 async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
-    the_p = await get_current_user()
-    print(the_p)
     return items
 
 
@@ -77,36 +56,28 @@ async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 async def create_new_item(title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
                           price: str = Form(...), category_id: int = Form(...), db: Session = Depends(get_db),
                           file: List[UploadFile] = File(...)):
-    cuser = await current_active_user()
-    if cuser is None:
-        raise HTTPException(status_code=400, detail="You are not logged in")
-    else:
-        try:
-            images = []
-            for f in file:
-                with open("media/" + f.filename, "wb") as image:
-                    shutil.copyfileobj(f.file, image)
-                    url = str("media/" + f.filename)
-                    images.append(Image(url=url, title=f.filename))
-        finally:
-            f.close()
-        data_stored = Item(title=title, description=description, quantity=quantity, price=price, images=images,
-                           category_id=category_id)
-        db.add(data_stored)
-        db.commit()
-        return data_stored
+    try:
+        images = []
+        for f in file:
+            with open("media/" + f.filename, "wb") as image:
+                shutil.copyfileobj(f.file, image)
+                url = str("media/" + f.filename)
+                images.append(Image(url=url, title=f.filename))
+    finally:
+        f.close()
+    data_stored = Item(title=title, description=description, quantity=quantity, price=price, images=images,
+                       category_id=category_id)
+    db.add(data_stored)
+    db.commit()
+    return data_stored
 
 
 @app.get("/item/{item_id}", response_model=schema.Item)
 async def get_item(item_id: int, db: Session = Depends(get_db)):
-    cuser = await current_active_user()
-    if cuser is None:
-        raise HTTPException(status_code=400, detail="You are not logged in")
-    else:
-        item = crud.get_item(db, item_id=item_id)
-        if item is None:
-            raise HTTPException(status_code=404, detail="Item not found")
-        return item
+    item = crud.get_item(db, item_id=item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item
 
 
 @app.get("/item/{item_id}/images", response_model=List[schema.ImageBase])
@@ -118,44 +89,35 @@ def get_images(item_id: int, db: Session = Depends(get_db)):
 @app.put("/item/{item_id}", response_model=schema.Item)
 async def update_item(item_id: int, title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
                       price: str = Form(...), file: List[UploadFile] = File(...), db: Session = Depends(get_db)):
-    cuser = await current_active_user()
-
-    if cuser is None:
-        raise HTTPException(status_code=400, detail="You are not logged in")
-    else:
-        try:
-            images = []
-            for f in file:
-                with open("media/" + f.filename, "wb") as image:
-                    shutil.copyfileobj(f.file, image)
-                    url = str("media/" + f.filename)
-                    images.append(Image(url=url, title=f.filename))
-        finally:
-            f.close()
-        item = crud.get_item(db, item_id=item_id)
-        if item is None:
-            raise HTTPException(status_code=404, detail="Item not found")
-        item.title = title
-        item.description = description
-        item.quantity = quantity
-        item.price = price
-        item.images = images
-        db.commit()
-        return item
+    try:
+        images = []
+        for f in file:
+            with open("media/" + f.filename, "wb") as image:
+                shutil.copyfileobj(f.file, image)
+                url = str("media/" + f.filename)
+                images.append(Image(url=url, title=f.filename))
+    finally:
+        await f.close()
+    item = crud.get_item(db, item_id=item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    item.title = title
+    item.description = description
+    item.quantity = quantity
+    item.price = price
+    item.images = images
+    db.commit()
+    return item
 
 
 @app.delete("/item/{item_id}", response_model=schema.Item)
 async def delete_item(item_id: int, db: Session = Depends(get_db)):
-    cuser = await current_active_user()
-    if cuser is None:
-        raise HTTPException(status_code=400, detail="You are not logged in")
-    else:
-        item = crud.get_item(db, item_id=item_id)
-        if item is None:
-            raise HTTPException(status_code=404, detail="Item not found")
-        db.delete(item)
-        db.commit()
-        return item
+    item = crud.get_item(db, item_id=item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(item)
+    db.commit()
+    return item
 
 
 @app.get("/get_images")

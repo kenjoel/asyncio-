@@ -1,7 +1,18 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, TIMESTAMP, text
 from sqlalchemy.orm import relationship
 
 from ..database.db import Base
+
+
+class Users(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    username = Column(String(80), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password = Column(String(80), nullable=False)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP, server_default=text('now()'))
+    item = relationship('Items', back_populates='created_by')
 
 
 class Category(Base):
@@ -18,9 +29,12 @@ class Item(Base):
     description = Column(String, index=True)
     quantity = Column(String, index=True)
     price = Column(Integer, index=True)
+    created_at = Column(TIMESTAMP(timezone=True), index=True, nullable=False, server_default=text('now()'))
     images = relationship("Image", back_populates="item", cascade="all, delete-orphan")
     category_id = Column(Integer, ForeignKey("category.id"))
     category = relationship("Category", back_populates="items")
+    user_items = relationship("Users", back_populates="item")
+    created_by = Column(Integer, ForeignKey('users.id'))
 
 
 class Image(Base):

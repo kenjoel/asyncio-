@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class ImageBase(BaseModel):
@@ -66,5 +66,40 @@ class Categories(CategoryBase):
 class FullCategory(CategoryBase):
     id: int
 
+    class Config:
+        orm_mode = True
+
+
+class User(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    password: str
+    is_admin: bool
+    items = list[Item] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+
+    class Config:
+        orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class UserDB(User):
     class Config:
         orm_mode = True
