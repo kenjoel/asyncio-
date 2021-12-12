@@ -29,3 +29,4 @@ attrs~=20.3.0
 PyMySQL~=1.0.2
 psycopg2~=2.8.6
 databases~=0.5.3
+passlib~=1.7.4

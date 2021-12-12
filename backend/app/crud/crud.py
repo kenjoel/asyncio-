@@ -1,13 +1,12 @@
 from sqlalchemy.orm import Session
 
 from ..models import models
-from ..models.models import Image
 from ..schema import schema
 from ..schema.schema import ImageBase
 
 
 def get_user_by_email(db: Session, email: str):
-    keepsake = db.query(models.User).filter(models.User.email == email).first()
+    keepsake = db.query(models.Users).filter(models.Users.email == email).first()
     return keepsake
 
 
@@ -61,9 +60,15 @@ def get_item(db, item_id):
 
 
 def create_user(db: Session, user: schema.UserCreate):
-    db_user = models.User(**user.dict())
+    db_user = models.Users(**user.dict())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user(db, user_id):
+    user = db.query(models.Users).filter(models.Users.id == user_id).first()
+    return user
+
 

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
@@ -74,9 +75,9 @@ class User(BaseModel):
     id: int
     username: str
     email: EmailStr
-    password: str
     is_admin: bool
-    items = list[Item] = []
+    created_at: datetime
+    items: list[Item] = []
 
     class Config:
         orm_mode = True
@@ -101,5 +102,13 @@ class UserUpdate(BaseModel):
 
 
 class UserDB(User):
+    class Config:
+        orm_mode = True
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
     class Config:
         orm_mode = True
