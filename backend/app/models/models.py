@@ -32,9 +32,7 @@ class Item(Base):
     created_at = Column(TIMESTAMP(timezone=True), index=True, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     images = relationship("Image", back_populates="item", cascade="all, delete-orphan")
     category_id = Column(Integer, ForeignKey("category.id"))
-    category = relationship("Category", back_populates="items")
-    user_items = relationship("Users", back_populates="item")
-    created_by = Column(Integer, ForeignKey('users.id'))
+    created_by = Column(Integer, ForeignKey('users.id'), nullable=False, onDelete="CASCADE")
 
 
 class Image(Base):

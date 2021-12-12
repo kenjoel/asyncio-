@@ -22,8 +22,8 @@ async def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 @router.post("/new_item", response_model=schema.Item)
 async def create_new_item(title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
                           price: str = Form(...), category_id: int = Form(...), db: Session = Depends(get_db),
-                          file: List[UploadFile] = File(...), user_id: int = Depends(get_current_user)):
-    print(user_id)
+                          file: List[UploadFile] = File(...), current_user: str = Depends(get_current_user)):
+    print(current_user)
     try:
         images = []
         for f in file:
@@ -57,8 +57,9 @@ def get_images(item_id: int, db: Session = Depends(get_db), user_id: int = Depen
 
 @router.put("/update/{item_id}", response_model=schema.Item)
 async def update_item(item_id: int, title: str = Form(...), description: str = Form(...), quantity: str = Form(...),
-                      price: str = Form(...), file: List[UploadFile] = File(...), db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+                      price: str = Form(...), file: List[UploadFile] = File(...), db: Session = Depends(get_db),
+                      current_user: str = Depends(get_current_user)):
+    print(current_user)
     try:
         images = []
         for f in file:
@@ -81,8 +82,8 @@ async def update_item(item_id: int, title: str = Form(...), description: str = F
 
 
 @router.delete("/delete/{item_id}", response_model=schema.Item)
-async def delete_item(item_id: int, db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    print(user_id)
+async def delete_item(item_id: int, db: Session = Depends(get_db), current_user: str = Depends(get_current_user)):
+    print(current_user)
     item = crud.get_item(db, item_id=item_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Item not found")
