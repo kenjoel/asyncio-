@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseSettings
 
-from backend.app.database.db import SessionLocal, engine, Base
-from backend.app.routers import images, users, items, category, auth
+from backend.app.database.db import engine, Base
+from backend.app.routers import images, users, items, category, auth, cart
 
 app = FastAPI()
 
@@ -24,6 +23,7 @@ app.include_router(items.router, prefix="/items", tags=["items"])
 app.include_router(category.router, prefix="/category", tags=["category"])
 app.include_router(images.router, prefix="/images", tags=["images"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(cart.router, prefix="/cart", tags=["cart"])
 
 if __name__ == "__main__":
     import uvicorn

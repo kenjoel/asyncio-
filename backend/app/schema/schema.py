@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
+from pydantic.types import conint
 
 
 class ImageBase(BaseModel):
@@ -129,3 +130,33 @@ class TokenData(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class Cart(BaseModel):
+    id: int
+    user_id: int
+    item_id: int
+    quantity: int
+    price: int
+    total_price: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class CartCreate(BaseModel):
+    user_id: int
+    item_id: int
+    quantity: int
+    price: int
+    total_price: int
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class CartTest(BaseModel):
+    item_id: int
+    dir: conint(ge=0, le=1)

@@ -79,3 +79,16 @@ def create_user(db: Session, user: schema.UserCreate):
 def get_user(db, user_id):
     user = db.query(models.Users).filter(models.Users.id == user_id).first()
     return user
+
+
+def get_items_in_cart(db, current_user):
+    items = db.query(models.Cart).filter(models.Cart.user_id == current_user.id).all()
+    return items
+
+
+def add_item_to_cart(db, cart_item, current_user):
+    cart_item = models.Cart(**cart_item.dict(), user_id=current_user.id)
+    db.add(cart_item)
+    db.commit()
+    db.refresh(cart_item)
+    return cart_item

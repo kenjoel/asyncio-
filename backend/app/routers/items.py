@@ -16,7 +16,7 @@ router = APIRouter()
 @router.get("/", response_model=List[schema.Item])
 async def read_items(skip: int = 0, limit: int = 100, search: str = "", db: Session = Depends(get_db)):
     if search.isalpha():
-        items = crud.get_items_search(db, skip=skip, limit=limit)
+        items = crud.get_items_search(search, db, skip=skip, limit=limit,)
         return items
     items = crud.get_items(db, skip=skip, limit=limit)
     return items

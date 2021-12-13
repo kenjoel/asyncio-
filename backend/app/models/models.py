@@ -44,3 +44,16 @@ class Image(Base):
     url = Column(String, index=True)
     item_id = Column(Integer, ForeignKey("items.id"))
     item = relationship("Item", back_populates="images")
+
+
+class Cart(Base):
+    __tablename__ = "cart.py"
+    id = Column(Integer, primary_key=True, index=True)
+    item_id = Column(Integer, ForeignKey("items.id"))
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+
+class trending(Base):
+    __tablename__ = "trending"
+    id = Column(Integer, primary_key=True, index=True)
+    item_id = Column(Integer, ForeignKey("items.id"))
