@@ -57,3 +57,7 @@ class trending(Base):
     __tablename__ = "trending"
     id = Column(Integer, primary_key=True, index=True)
     item_id = Column(Integer, ForeignKey("items.id"))
+
+# When we are trying to find treading products, we might try something like this
+# trending = session.query(trending, func.count(item.id)).join(items).filter(trending.item_id == item.id).first()
+# you'll figure out how to do this
