@@ -53,10 +53,10 @@ class Cart(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
 
-class trending(Base):
-    __tablename__ = "trending"
-    id = Column(Integer, primary_key=True, index=True)
-    item_id = Column(Integer, ForeignKey("items.id"))
+# class trending(Base):
+#     __tablename__ = "trending"
+#     id = Column(Integer, primary_key=True, index=True)
+#     item_id = Column(Integer, ForeignKey("items.id"))
 
 # When we are trying to find treading products, we might try something like this
 # trending = session.query(trending, func.count(item.id)).join(items).filter(trending.item_id == item.id).first()

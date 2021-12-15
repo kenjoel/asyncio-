@@ -92,3 +92,10 @@ def add_item_to_cart(db, cart_item, current_user):
     db.commit()
     db.refresh(cart_item)
     return cart_item
+
+
+def remove_item_from_cart(db, item_id):
+    data = db.query(models.Cart).filter(models.Cart.id == item_id).first()
+    db.delete(data)
+    db.commit()
+    return data

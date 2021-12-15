@@ -19,3 +19,8 @@ async def add_to_cart(cart_item: dict, current_user: str = Depends(get_current_u
     add_item_to_cart = crud.add_item_to_cart(db, cart_item, current_user)
     return {"cart": add_item_to_cart}
 
+
+@router.get("/remove_from_cart/{item_id}")
+async def remove_from_cart(item_id: int, db: Session = Depends(get_db)):
+    remove_item_from_cart = crud.remove_item_from_cart(db, item_id)
+    return {"cart": remove_item_from_cart}
